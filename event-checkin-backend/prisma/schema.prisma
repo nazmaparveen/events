@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String          @id @default(uuid())
+  email         String          @unique
+  name          String
+  password      String 
+  EventAttendee EventAttendee[]
+}
+
+model Event {
+  id        String          @id @default(cuid())
+  name      String
+  location  String
+  startTime DateTime
+  attendees EventAttendee[]
+}
+
+model EventAttendee {
+  id      String @id @default(cuid())
+  user    User   @relation(fields: [userId], references: [id])
+  userId  String
+  event   Event  @relation(fields: [eventId], references: [id])
+  eventId String
+
+  @@unique([userId, eventId]) // Prevent duplicate entries
+}
